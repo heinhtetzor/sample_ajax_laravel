@@ -1,0 +1,13 @@
+.hidden {
+    display: none;
+}
+.alert {
+    margin-top : 20px;
+}
+ .centered{
+        margin: auto;
+        float: none;
+}
+.category_id {
+	width: 100%;
+}
