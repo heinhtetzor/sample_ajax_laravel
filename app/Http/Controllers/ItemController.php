@@ -60,8 +60,10 @@ class ItemController extends Controller
         $item->quantity = $request->quantity;
 
         $item->save();
-
-        return Response::json(array('item'=>$item));
+        
+        $returnItem = $item->where('id', $item->id)->with('category')->get();
+        
+        return Response::json(array('item'=>$returnItem));
         }
     }
 
@@ -96,7 +98,33 @@ class ItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $item = Item::findorfail($id);
+        // echo $item; die();
+        $validator = Validator::make(Input::all(), [
+            "name"=> "required|max:199|min:2|regex:/^[a-zA-Z ]+$/u|unique:items,name,".$item->id,
+            "category_id"=> "required|numeric",
+            "price"=> "required|numeric|min:200",
+            "quantity"=> "numeric",
+        ]);
+
+        if($validator->fails())
+        {
+            return Response::json(array('errors'=> $validator->getMessageBag()->toArray()));
+        }
+        else
+        {
+        
+        $item->name = $request->name;
+        $item->category_id = $request->category_id;
+        $item->price = $request->price;
+        $item->quantity = '0';
+
+        $item->save();
+        
+        $returnItem = $item->where('id', $item->id)->with('category')->get();
+        
+        return Response::json(array('item'=>$returnItem));
+        }
     }
 
     /**
@@ -107,7 +135,10 @@ class ItemController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $item = Item::findorfail($id);
+        $item->delete();
+
+        return Response::json(array("message"=>"successfully deleted"));
     }
 
     //get all categories

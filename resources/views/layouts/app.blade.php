@@ -28,6 +28,7 @@
     
     <link rel="stylesheet" href="css/app.css">
     <link rel="stylesheet" href="css/main.css">
+  
 </head>
 <body>
     @include('layouts.inc.navbar')

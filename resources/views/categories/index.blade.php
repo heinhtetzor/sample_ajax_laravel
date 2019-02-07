@@ -67,8 +67,7 @@
             <div class="form-group row">
                 <label for="name" class="col-lg-2 col-form-label">Category</label>
                 <div class="col-lg-8" >
-               {{ csrf_field() }}
-                   {{ method_field('PUT') }}
+              
                     <input type="hidden" id="catId" value="">
                     <input type="text" class="form-control" id="nameEdit" placeholder="Enter Category Name" value="">
                     <div class="hidden alert alert-danger" id="error">
