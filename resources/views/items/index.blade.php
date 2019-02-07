@@ -12,9 +12,9 @@
         	<h3>Item Management</h3>
 					<form>
 						<div class="row">
-							<div class="col-md-2">
-								<label for="">Add New Item :</label>
-							</div>
+							
+								<label for="name" class="col-md-2">Add New Item </label>
+							
 							<div class="col-md-2">
 								<input type="text" class="form-control" name="name" id="name" placeholder="Enter Item Name">
 							</div>

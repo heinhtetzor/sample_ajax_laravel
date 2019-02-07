@@ -1,3 +1,4 @@
+
 .hidden {
     display: none;
 }
@@ -9,7 +10,8 @@
         float: none;
 }
 .select2 {
-	width: 100%!important;
+    width: 100%!important;
+   
 }
 input[type=text], input[type=number], .select2   {
     margin-bottom: 5px;
