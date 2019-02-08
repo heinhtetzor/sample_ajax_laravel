@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="col-lg-2">
-                    <button class="btn btn-success hidden" id="addCategoryBtn" >Add</button>
+                    <button class="btn btn-success" id="addCategoryBtn" >Add</button>
                 </div>  
             </div>
             

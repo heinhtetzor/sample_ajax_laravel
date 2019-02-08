@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
-use App\Item;
-use App\Receive;
+use App\Warehouse;
 use Response;
 use Validator;
+use Illuminate\Support\Facades\Input;
+use Alert;
 
-class ReceiveController extends Controller
+class WarehouseController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +18,7 @@ class ReceiveController extends Controller
      */
     public function index()
     {
-        return view('receives.index');
+        return view('warehouses.index');
     }
 
     /**
@@ -28,7 +28,7 @@ class ReceiveController extends Controller
      */
     public function create()
     {
-        return view('receives.create');
+        return view('warehouses.create');
     }
 
     /**
@@ -39,7 +39,34 @@ class ReceiveController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make(Input::all(), [
+            "name"=> "required|max:199|min:2|unique:warehouses",
+            "address1"=>"required|min:3",
+            "address2"=>"required|min:3",
+            "long"=>"required|numeric",
+            "lat"=>"required|numeric"
+        ]);
+        if($validator->fails())
+        {
+            // return Response::json(array("errors"=>$validator->getMessageBag()->toArray()));
+            $errors = $validator->getMessageBag();
+            // echo $errors; 
+            alert()->error('Error', 'Check your input');
+            return redirect('/warehouses/create');
+        }
+        else
+        {
+            $warehouse = new Warehouse();
+            $warehouse->name = $request->name;
+            $warehouse->address1 = $request->address1;
+            $warehouse->address2 = $request->address2;
+            $warehouse->long = $request->long;
+            $warehouse->lat = $request->lat;
+
+            $warehouse->save();
+            alert()->success('Success', 'Compelte Adding new Warehouse');
+            return redirect('/warehouses/create');
+        }
     }
 
     /**
@@ -85,13 +112,5 @@ class ReceiveController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    //get items
-    public function getItems($id)
-    {          
-        $items = Item::where('category_id', $id)->orderBy('name', 'ASC')->get();
-        
-        return Response::json(array('items'=>$items));
     }
 }

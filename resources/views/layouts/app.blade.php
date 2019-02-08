@@ -25,17 +25,18 @@
     {{-- select2 --}}
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-
-    
+{{-- mapbox --}}
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />  
     {{-- <link rel="stylesheet" href="/css/app.css"> --}}
     <link rel="stylesheet" href="/css/main.css">
   
 </head>
 <body>
     @include('layouts.inc.navbar')
-      
+    @include('sweetalert::alert')`
         @yield('content')
-    
+        
 </body> 
         @yield('script')
 </html>

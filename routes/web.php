@@ -20,6 +20,7 @@ Route::post('/categories/load', 'CategoryController@load');
 Route::get('/welcome', 'CategoryController@load');
 
 Route::resource('/items', 'ItemController');
+Route::resource('/warehouses', 'WarehouseController');
 Route::resource('/receives', 'ReceiveController');
 Route::get('/getCategories', 'ItemController@getCategories');
 Route::get('/getItems/{id}', 'ReceiveController@getItems');

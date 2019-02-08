@@ -9,48 +9,62 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title"></h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="categoryId">Category:</label>
-                                <select class="form-control" name="categoryId" id="categoryId">
-                                    <option value="">Choose Category</option>
-                                    {{-- List added from AJAX --}}
-                                </select>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="categoryId">Category:</label>
+                                    <select class="form-control" name="categoryId" id="categoryId">
+                                        <option value="">Choose Category</option>
+                                        {{-- List added from AJAX --}}
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="itemId">Item:</label>
-                                <select class="form-control" name="itemId" id="itemId">
-                                    <option value="">Choose Item</option>
-                                    {{-- List added from AJAX --}}
-                                </select>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="itemId">Item:</label>
+                                    <select class="form-control" name="itemId" id="itemId">
+                                        <option value="">Choose Item</option>
+                                        {{-- List added from AJAX --}}
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="from">From:</label>
-                                <input type="text" placeholder="Enter Supplier" id="from" name="from" class="form-control">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="from">From:</label>
+                                    <input type="text" placeholder="Enter Supplier" id="from" name="from" class="form-control">
+                                </div>
                             </div>
-                        </div>
-                    </div>    
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for="receiveQty">Receiving Quantity:</label>
-                                <input type="number" class="form-control" id="receiveQty" name="receiveQty" placeholder="Qty">
+                        </div>    
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="to">Warehouse:</label>
+                                    <input type="text" class="form-control" id="warehouse" name="warehouse">
+                                </div>
                             </div>
-                        </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="to">Date:</label>
+                                    <input type="date" class="form-control" id="date" name="date" >
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="receiveQty">Receiving Quantity:</label>
+                                    <input type="number" class="form-control" id="receiveQty" name="receiveQty" placeholder="Qty">
+                                </div>
+                            </div>
 
-                    </div>
-                    {{-- card footer --}}
-                    <div class="card-footer text-right">
-                        <button class="btn btn-success" id="addToList" name="addToList">Add to Receipt List</button>
-                    </div>
+                        </div>
+                        {{-- card footer --}}
+                        <div class="card-footer text-right">
+                            <button class="btn btn-success" id="addToList" name="addToList">Add to Receipt List</button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <div class="card">
+            <div class="card hidden" id="receiptList">
                 <div class="card-header">
                     Receipt List
                 </div>
@@ -63,13 +77,19 @@
                                 <th>Item</th>
                                 <th>Category</th>
                                 <th>From</th>
+                                <th>Warehouse</th>
+                                <th>Date</th>
                                 <th>Qty</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="list">
                             
                         </tbody>
                     </table>
+                </div>
+                <div class="card-footer text-right">
+                    <button class="btn btn-success" id="receiveBtn" name="ReceiveBtn">Add to Received Items</button>
                 </div>
             </div>
         </div>
@@ -90,8 +110,55 @@
         getItems()
 
         //add to receipt list
-        $('#addToList').click(()=>{
-            addToList()
+        let i = 1
+        $('#addToList').on('click',(e)=>{
+            //list function
+                e.preventDefault()
+                const itemId = $('#itemId').val()
+                const categoryId = $('#categoryId').val()
+                const receiveQty = $('#receiveQty').val()
+                const from = $('#from').val()
+                const to = $('#ware').val()
+                const date = $('#date').val()
+                if(!categoryId || !itemId || !from || !receiveQty || !to || !date) {
+                    alert ('Fill the from completely')
+                }
+                else {
+                    $('#receiptList').removeClass('hidden')
+                    $('#list').append('<tr>'
+                                    +'<td>'
+                                    +i
+                                    +'</td>'
+                                    +'<td>'
+                                    +'<input type="text" class="hidden" value="'+ itemId +'" >'
+                                    +$('#itemId option:selected').text()  
+                                    +'</td>'
+                                    +'<td>'
+                                    +'<input type="text" class="hidden" value="'+ categoryId +'">'
+                                    +$('#categoryId option:selected').text()
+                                    +'</td>'
+                                    +'<td>'
+                                    +from
+                                    +'</td>'
+                                    +'<td>'
+                                    +warehouse
+                                    +'</td>'
+                                    +'<td>'
+                                    +date
+                                    +'</td>'
+                                    +'<td>'
+                                    +receiveQty
+                                    +'</td>'
+                                    +'<td>'
+                                    + '<button class="btn btn-danger"><i class="fas fa-times"></i></button>'
+                                    +'</td>'
+                                    +'</tr>'
+                                    )
+                                 i++
+                    $('#itemId, #categoryId, #from, #receiveQty, #to, #date').val('')
+                }
+                
+            
         })
     })
     // getItems function
@@ -136,31 +203,6 @@
        })
     }
     //add to list function
-    function addToList() {
-        const itemId = $('#itemId').val()
-        const categoryId = $('#categoryId').val()
-        const receiveQty = $('#receiveQty').val()
-        const from = $('#from').val()
-
-        $('#list').append('<tr>'
-                        +'<td>'
-                        +1
-                        +'</td>'
-                        +'<td>'
-                        +itemId
-                        +'</td>'
-                        +'<td>'
-                        +categoryId
-                        +'</td>'
-                        +'<td>'
-                        +from
-                        +'</td>'
-                        +'<td>'
-                        +receiveQty
-                        +'</td>'
-                        +'</tr>'
-                        )
-        $('#itemId, #categoryId, #from, #receiveQty').val('')
-    }
+    
 </script>
 @endsection
