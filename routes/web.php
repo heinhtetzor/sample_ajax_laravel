@@ -11,10 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
+Route::get('/','CategoryController@home');
 Route::resource('/categories', 'CategoryController');
 Route::post('/categories/load', 'CategoryController@load');
 Route::get('/welcome', 'CategoryController@load');
@@ -24,16 +21,3 @@ Route::resource('/warehouses', 'WarehouseController');
 Route::resource('/receives', 'ReceiveController');
 Route::get('/getCategories', 'ItemController@getCategories');
 Route::get('/getItems/{id}', 'ReceiveController@getItems');
-
-
-
-Route::get('/sendmail', function() 
-{
-	$data = array('name' => 'Jordan');
-	
-	Mail::send('/welcome', $data, function($message)
-	{
-		$message->to('hhz18@icloud.com')
-		->subject('New Category created!');
-	});
-});

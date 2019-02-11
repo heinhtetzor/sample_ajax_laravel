@@ -124,4 +124,10 @@ class CategoryController extends Controller
         $category->delete();
         return Response::json(array("message"=>"Successful Deleting"));
     }
+
+    //home
+    public function home()
+    {
+        return view('welcome');
+    }
 }
