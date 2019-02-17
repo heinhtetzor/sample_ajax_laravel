@@ -44,7 +44,8 @@ class ItemController extends Controller
             "name"=> "required|max:199|min:2|regex:/^[a-zA-Z ]+$/u|unique:items",
             "category_id"=> "required|numeric",
             "price"=> "required|numeric|min:200",
-            "quantity"=> "required|numeric",
+            "quantity"=> "required|numeric"
+
         ]);
 
         if($validator->fails())
@@ -53,17 +54,26 @@ class ItemController extends Controller
         }
         else
         {
-        $item = new Item();
-        $item->name = $request->name;
-        $item->category_id = $request->category_id;
-        $item->price = $request->price;
-        $item->quantity = $request->quantity;
+            if($request->file('photo'))
+            {
+                $filenameWithExt = $request->file('photo')->getClientOriginalName();
+                $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+                $extension = $request->file('photo')->getClientOriginalExtension();
+                $filenameToStore = $filename.'_'.time().'.'.$extension;
+                $path = $request->file('photo')->storeAs('public/img', $filenameToStore);
+                $item = new Item();
+                $item->name = $request->name;
+                $item->category_id = $request->category_id;
+                $item->price = $request->price;
+                $item->quantity = $request->quantity;
+                $item->photo = $filenameToStore;
+                $item->box_id = '1';
+                $item->save();
 
-        $item->save();
-        
-        $returnItem = $item->where('id', $item->id)->with('category')->get();
-        
-        return Response::json(array('item'=>$returnItem));
+                $returnItem = $item->where('id', $item->id)->with('category')->get();
+
+                return Response::json(array('item'=>$returnItem));
+            }
         }
     }
 
@@ -113,19 +123,28 @@ class ItemController extends Controller
         }
         else
         {
-        
-        $item->name = $request->name;
-        $item->category_id = $request->category_id;
-        $item->price = $request->price;
-        $item->quantity = '0';
+          if($request->file('photo'))
+          {
+            $filenameWithExt = $request->file('photo')->getClientOriginalName();
+            $filename = pathinfo($filenameWithExt, PATHINFO_FILENAME);
+            $extension = $request->file('photo')->getClientOriginalExtension();
+            $filenameToStore = $filename.'_'.time().'.'.$extension;
+            $path = $request->file('photo')->storeAs('public/img', $filenameToStore);
+            $item->name = $request->name;
+            $item->category_id = $request->category_id;
+            $item->price = $request->price;
+            $item->quantity = '0';
+            $item->box = '1';
+            $item->photo = $filenameToStore;
+            $item->save();
 
-        $item->save();
-        
-        $returnItem = $item->where('id', $item->id)->with('category')->get();
-        
-        return Response::json(array('item'=>$returnItem));
-        }
+            $returnItem = $item->where('id', $item->id)->with('category')->get();
+
+            return Response::json(array('item'=>$returnItem));
+          }
+
     }
+  }
 
     /**
      * Remove the specified resource from storage.

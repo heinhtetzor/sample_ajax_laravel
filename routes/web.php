@@ -16,6 +16,8 @@ Route::resource('/categories', 'CategoryController');
 Route::post('/categories/load', 'CategoryController@load');
 Route::get('/welcome', 'CategoryController@load');
 
+Route::get('/batch', 'TestController@batchSave');
+
 Route::resource('/items', 'ItemController');
 Route::resource('/warehouses', 'WarehouseController');
 Route::resource('/receives', 'ReceiveController');

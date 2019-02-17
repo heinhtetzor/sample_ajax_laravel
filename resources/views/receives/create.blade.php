@@ -35,7 +35,7 @@
                                     <input type="text" placeholder="Enter Supplier" id="from" name="from" class="form-control">
                                 </div>
                             </div>
-                        </div>    
+                        </div>
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -84,7 +84,7 @@
                             </tr>
                         </thead>
                         <tbody id="list">
-                            
+
                         </tbody>
                     </table>
                 </div>
@@ -99,7 +99,7 @@
 @section('script')
 <script>
     $(document).ready(()=>{
-        //select 2 
+        //select 2
         $('#itemId').select2()
         $('#categoryId').select2()
 
@@ -118,7 +118,7 @@
                 const categoryId = $('#categoryId').val()
                 const receiveQty = $('#receiveQty').val()
                 const from = $('#from').val()
-                const to = $('#ware').val()
+                const to = $('#to').val()
                 const date = $('#date').val()
                 if(!categoryId || !itemId || !from || !receiveQty || !to || !date) {
                     alert ('Fill the from completely')
@@ -131,7 +131,7 @@
                                     +'</td>'
                                     +'<td>'
                                     +'<input type="text" class="hidden" value="'+ itemId +'" >'
-                                    +$('#itemId option:selected').text()  
+                                    +$('#itemId option:selected').text()
                                     +'</td>'
                                     +'<td>'
                                     +'<input type="text" class="hidden" value="'+ categoryId +'">'
@@ -157,8 +157,8 @@
                                  i++
                     $('#itemId, #categoryId, #from, #receiveQty, #to, #date').val('')
                 }
-                
-            
+
+
         })
     })
     // getItems function
@@ -174,7 +174,7 @@
                     +'</option>'
                )
            }
-        }) 
+        })
     }
 
     // get specific items by categoryId
@@ -192,17 +192,17 @@
                             +items[i].name
                             +'</option>'
                     )
-           }        
+           }
            })
            .catch((error)=>{
                console.log(error);
-               
+
            })
 
-        
+
        })
     }
     //add to list function
-    
+
 </script>
 @endsection

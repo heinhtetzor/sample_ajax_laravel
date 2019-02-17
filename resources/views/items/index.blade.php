@@ -10,11 +10,11 @@
    <div class="container" id="app">
         <div class="centered">
         	<h3>Item Management</h3>
-					<form>
+					<form id="addItemForm" enctype="multipart/form-data">
 						<div class="row">
-							
+
 								<label for="name" class="col-md-2">Add New Item </label>
-							
+
 							<div class="col-md-2">
 								<input type="text" class="form-control" name="name" id="name" placeholder="Enter Item Name">
 							</div>
@@ -33,11 +33,17 @@
 								<button class="btn btn-success btn-block" id="addItemBtn">Add</button>
 							</div>
 						</div>
+						<div class="row">
+							<div class="col-md-6">
+								<input type="file" class="form-control" id="photo" name="photo">
+							</div>
+						</div>
 					</form>
         <table class="table table-dark table-sm" id="itemTable">
         	<thead>
         		<tr>
 	        		<th>No</th>
+	        		<th>Photo</th>
 	        		<th>Name</th>
 	        		<th>Category</th>
 	        		<th>Price</th>
@@ -49,12 +55,13 @@
         		@foreach($items as $i=>$item)
 					<tr id="item{{ $item->id }}">
         				<td>{{ $i+1 }}</td>
+        				<td><img class="thumbnail" height="100px" width="auto" src="/storage/img/{{ $item->photo }}"></td>
         				<td>{{ $item->name }}</td>
         				<td>{{ $item->category['name'] }}</td>
         				<td>{{ $item->price }}</td>
         				<td>{{ $item->quantity }}</td>
         				<td>
-						<a class="btn btn-info" data-toggle='modal' data-id='{{ $item->id }}' data-name='{{ $item->name }}' data-category_id='{{ $item->category_id }}' data-price='{{ $item->price }}' data-target='#editModal'><i class="fas fa-edit"></i></a>
+						<a class="btn btn-info" data-toggle='modal' data-id='{{ $item->id }}' data-name='{{ $item->name }}' data-category_id='{{ $item->category_id }}' data-price='{{ $item->price }}' data-photo='{{ $item->photo }}' data-target='#editModal'><i class="fas fa-edit"></i></a>
 							<a class='btn btn-danger' data-toggle='modal' data-id='{{ $item->id }}' data-name='{{ $item->name }}' data-target='#deleteModal'><i class="fas fa-trash"></i></a>
         				</td>
         			</tr>
@@ -96,10 +103,10 @@
 					</button>
 				</div>
 				<div class="modal-body">
-				
-					<form>
+
+					<form id="editItemForm" enctype="multipart/form-data">
 							<input type="hidden" id="editItemId" value="" name="editItemId">
-				
+
 								<div class="form-group row">
 										<label for="itemId" class="col-lg-3 col-form-label">Item Name</label>
 										<input type="text" class="form-control col-lg-8" id="editName" name="editName" value="">
@@ -114,12 +121,13 @@
 											<option value=""></option>
 										</select>
 									</div>
+                  <div class="form-group row">
+                    <label for="editPhoto" class="col-lg-3 col-form-label">Photo</label>
+                    <img src="" height="200px" width="auto" alt="Photo" id="showPhoto">
+                    <input  type="file" name="editPhoto" id="editPhoto" class="form-control" value="">
+                  </div>
 										<div class="hidden alert alert-danger" id="editError">
-												
 										</div>
-					         
-				
-			
 				</div>
 				<div class="modal-footer">
 					<button type="button" id="editItemBtn" class="btn btn-primary">Save changes</button>
@@ -164,11 +172,11 @@
 			//get categories for select2
 			getCategories()
 			//add Item to database
-			$('#addItemBtn').click((e)=>{
-				e.preventDefault()
+            $('#addItemForm').on('submit', (e)=>{
+						e.preventDefault()
+						addItem()
+            })
 
-				addItem()
-			})
 			//when shown delete Modal
 			$('#deleteModal').on('shown.bs.modal', (e) => {
 				const itemId = $(e.relatedTarget).data('id')
@@ -188,24 +196,26 @@
 				const categoryId = $(e.relatedTarget).data('category_id')
 				const price = $(e.relatedTarget).data('price')
 				const quantity = $(e.relatedTarget).data('quantity')
+				const photo = $(e.relatedTarget).data('photo')
 
 				$('#editName').val(name)
 				$('#editItemId').val(itemId)
 				$('#editPrice').val(price)
-				
+				// $('#editPhoto').val(photo)
+        $('#showPhoto').attr('src', '/storage/img/'+photo)
 				axios.get('getCategories')
 				.then((response)=>{
 					// console.log(response.data.categories)
 					const categories = response.data.categories
 					for(let i = 0; i < categories.length; i++) {
-						$('#editCategoryId').append('<option value=' + categories[i].id 
-        										+ (categories[i].id == categoryId? ' selected' : '') + '>' 
-        										+ categories[i].name + '</option>')					
+						$('#editCategoryId').append('<option value=' + categories[i].id
+        										+ (categories[i].id == categoryId? ' selected' : '') + '>'
+        										+ categories[i].name + '</option>')
 														}
 				})
 				.catch((error)=>{
 					console.log(error)
-				})	
+				})
 			})
 
 
@@ -213,82 +223,102 @@
 			$('#editItemBtn').click(()=>{
 					updateItem()
 				})
-		
-		
+
+
 		})
 		//Update item function
 		function updateItem(e) {
 
-			const editName = $('#editName').val()
-					const editCategoryId = $('#editCategoryId').val()
-					const editPrice = $('#editPrice').val()
-					const editItemId = $('#editItemId').val()
-					const editQuantity = $('#editQuantity').val()
+			    // const editName = $('#editName').val()
+					// const editCategoryId = $('#editCategoryId').val()
+					// const editPrice = $('#editPrice').val()
+					// const editItemId = $('#editItemId').val()
+					// const editQuantity = $('#editQuantity').val()
+					// const editPhoto = $('#editPhoto').val()
 
-					axios.put('items/'+editItemId, {
-						_token : $("input[name=_token]").val(),
-						name: editName,
-						category_id: editCategoryId,
-						price: editPrice,
-						quantity: editQuantity
-					})
-					.then((response)=>{
-						// console.log(response)
-						const itemData = response.data.item[0]
-						console.log(itemData);
-		
-						$('#item'+itemData.id).replaceWith('<tr id="item'+ itemData.id +'">'
-																								+'<td style="139px">'
-																								+'<div class="badge badge-success">Update</div>'
-																								+'</td>'
-																								+'<td>'
-																								+itemData.name
-																								+'</td>'
-																								+'<td>'
-																								+itemData.category.name
-																								+'</td>'
-																								+'<td>'
-																								+itemData.price
-																								+'</td>'
-																								+'<td>'
-																								+itemData.quantity
-																								+'</td>'
-																								+'<td>'
-																								+'<a>'
-																								+'</a>'
-																								+'<a class="btn btn-info" data-toggle="modal" data-target="#editModal" data-id="'+itemData.id+'" data-name="'+itemData.name+'" data-category_id="'+itemData.category_id+'" data-price="'+itemData.price+'">'
-																								+'<i class="fas fa-edit"></i>'
-																								+'</a>'
-																								+'<a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="'+itemData.id+'" data-name="'+itemData.name+'" >'
-																								+'<i class="fas fa-trash"></i>'
-																								+'</a>'
-																								+'</td>'
-																								+'</tr>'	
-							)
-							$('#editModal').modal('hide')
-					})
-					.catch((error)=>{
-						console.log(error)
-					})
-		}
+					// axios.put('items/'+editItemId, {
+					// 	_token : $("input[name=_token]").val(),
+					// 	name: editName,
+					// 	category_id: editCategoryId,
+					// 	price: editPrice,
+					// 	quantity: editQuantity
+					// })
+          const data = new FormData($('#editItemForm')[0])
+          const id = $('#editItemId').val()
+          $.ajaxSetup({
+    									headers: {
+    											'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+    									}
+    							})
+    			$.ajax({
+    				method: 'put',
+    				url: 'items/'+id,
+    				data: data,
+    				contentType: false,
+    				processData: false,
+    				success: function(response){
+              console.log(response);
+              const itemData = response.item[0]
+              console.log(itemData);
+
+              $('#item'+itemData.id).replaceWith('<tr id="item'+ itemData.id +'">'
+                                                  +'<td style="139px">'
+                                                  +'<div class="badge badge-success">Update</div>'
+                                                  +'</td>'
+                                                  +'<td>'
+                                                  +itemData.name
+                                                  +'</td>'
+                                                  +'<td>'
+                                                  +itemData.category.name
+                                                  +'</td>'
+                                                  +'<td>'
+                                                  +itemData.price
+                                                  +'</td>'
+                                                  +'<td>'
+                                                  +itemData.quantity
+                                                  +'</td>'
+                                                  +'<td>'
+                                                  +'<a>'
+                                                  +'</a>'
+                                                  +'<a class="btn btn-info" data-toggle="modal" data-target="#editModal" data-id="'+itemData.id+'" data-name="'+itemData.name+'" data-category_id="'+itemData.category_id+'" data-price="'+itemData.price+'">'
+                                                  +'<i class="fas fa-edit"></i>'
+                                                  +'</a>'
+                                                  +'<a class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-id="'+itemData.id+'" data-name="'+itemData.name+'" >'
+                                                  +'<i class="fas fa-trash"></i>'
+                                                  +'</a>'
+                                                  +'</td>'
+                                                  +'</tr>'
+                )
+                $('#editModal').modal('hide')
+            }
+		})
+  }
 		//Add Item function
 		function addItem(e) {
-			const name = $('#name').val()
-			const category_id = $('#category_id').val()
-			const price = $('#price').val()
-			const quantity = $('#quantity').val()
-			
-			axios.post('items', {
-				name: name,
-				category_id: category_id,
-				price: price,
-				quantity: quantity
-			})
-			.then((response)=>{
-				// console.log(response.data.errors)
-				if(response.data.errors) {
-					const error = response.data.errors
-				
+			// const name = $('#name').val()
+			// const category_id = $('#category_id').val()
+			// const price = $('#price').val()
+			// const quantity = $('#quantity').val()
+			// const photo = $('#photo').val()
+			var data = new FormData($("#addItemForm")[0])
+      console.log(data)
+			$.ajaxSetup({
+									headers: {
+											'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
+									}
+							})
+			$.ajax({
+				method: 'POST',
+				url: 'items',
+				data: data,
+				contentType: false,
+				processData: false,
+				success: function(response){
+
+				console.log(response.errors)
+				if(response.errors) {
+					const error = response.errors
+
 					if(error.name) {
 						$('.modal-body #error').text(error.name)
 					}
@@ -301,8 +331,11 @@
 					else if(error.quantity) {
 						$('.modal-body #error').text(error.quantity)
 					}
-				
-					
+					else if(error.photo) {
+						$('.modal-body #error').text(error.photo)
+					}
+
+
 					$('#errorModal').modal('show')
 					//getting count of error object in ES6 way
 					// errLength = Object.keys(error).length
@@ -310,36 +343,100 @@
 					// for (let err in error.name) {
 					// 	console.log(error.name[err]);
 					// }
-					
+
 				}
 				else {
 					NProgress.start()
-					NProgress.done() 
-					const item = response.data.item[0]
+					NProgress.done()
+					const item = response.item[0]
 					console.log(item)
 
 					//clear form
-					$('#name, #price, #category_id').val('')
+					$('#name, #price, #category_id', '#photo').val('')
 					$('#name').focus()
 
 
 					$('#itemTable').prepend("<tr id=item"+ item.id +">"+
 						"<td width='130px'><span class='badge badge-success'>New</span></td>"+
-        				"<td>" + item.name + "</td>"+
-        				"<td>" + item.category.name + "</td>"+
+        				"<td><img height='100px' width='auto' src='/storage/img/"+ item.photo +"'>"+
+                "</td>"+
+                "<td>" + item.name + "</td>"+
+                "<td>" + item.category.name + "</td>"+
         				"<td>" + item.price + "</td>"+
         				"<td>" + item.quantity + "</td>"+
-						
+
 						"<td>"+
-						"<a class='btn btn-info' data-toggle='modal' data-id='"+ item.id +"' data-name='"+ item.name +"' data-category='"+ item.category_id +"' data-price='"+ item.price +"' data-target='#editModal'><i class='fas fa-edit'></i></a>"+
+						"<a class='btn btn-info' data-toggle='modal' data-id='"+ item.id +"' data-name='"+ item.name +"' data-category='"+ item.category_id +"' data-price='"+ item.price +"' data-target='#editModal' data-photo='"+ item.photo +"'><i class='fas fa-edit'></i></a>"+
 						"<a class='btn btn-danger' data-toggle='modal' data-id='"+ item.id +"' data-name='"+ item.name +"' data-target='#deleteModal'><i class='fas fa-trash'></i></a>"+
         				"</td>")
 					 "</tr>"
 				}
+
+				},
+				error: function(er) {
+					console.log(er);
+
+				}
 			})
-			.catch((error)=>{
-				console.log(error)
-			})
+			// .then((response)=>{
+			// 	// console.log(response.data.errors)
+			// 	if(response.data.errors) {
+			// 		const error = response.data.errors
+
+			// 		if(error.name) {
+			// 			$('.modal-body #error').text(error.name)
+			// 		}
+			// 		else if (error.price) {
+			// 			$('.modal-body #error').text(error.price)
+			// 		}
+			// 		else if (error.category_id) {
+			// 			$('.modal-body #error').text('Choose a category')
+			// 		}
+			// 		else if(error.quantity) {
+			// 			$('.modal-body #error').text(error.quantity)
+			// 		}
+			// 		else if(error.photo) {
+			// 			$('.modal-body #error').text(error.photo)
+			// 		}
+
+
+			// 		$('#errorModal').modal('show')
+			// 		//getting count of error object in ES6 way
+			// 		// errLength = Object.keys(error).length
+			// 		//loopin the error messages
+			// 		// for (let err in error.name) {
+			// 		// 	console.log(error.name[err]);
+			// 		// }
+
+			// 	}
+			// 	else {
+			// 		NProgress.start()
+			// 		NProgress.done()
+			// 		const item = response.data.item[0]
+			// 		console.log(item)
+
+			// 		//clear form
+			// 		$('#name, #price, #category_id').val('')
+			// 		$('#name').focus()
+
+
+			// 		$('#itemTable').prepend("<tr id=item"+ item.id +">"+
+			// 			"<td width='130px'><span class='badge badge-success'>New</span></td>"+
+      //   				"<td>" + item.name + "</td>"+
+      //   				"<td>" + item.category.name + "</td>"+
+      //   				"<td>" + item.price + "</td>"+
+      //   				"<td>" + item.quantity + "</td>"+
+
+			// 			"<td>"+
+			// 			"<a class='btn btn-info' data-toggle='modal' data-id='"+ item.id +"' data-name='"+ item.name +"' data-category='"+ item.category_id +"' data-price='"+ item.price +"' data-target='#editModal'><i class='fas fa-edit'></i></a>"+
+			// 			"<a class='btn btn-danger' data-toggle='modal' data-id='"+ item.id +"' data-name='"+ item.name +"' data-target='#deleteModal'><i class='fas fa-trash'></i></a>"+
+      //   				"</td>")
+			// 		 "</tr>"
+			// 	}
+			// })
+			// .catch((error)=>{
+			// 	console.log(error)
+			// })
 		}
 		//Delete Item function
 		function deleteItem() {
@@ -357,7 +454,7 @@
 				console.log(error)
 			})
 		}
-		
+
 
 		function getCategories() {
 				axios.get('getCategories')
@@ -370,7 +467,10 @@
 				})
 				.catch((error)=>{
 					console.log(error)
-				})	
+				})
 			}
+      function getItems() {
+
+      }
 	</script>
 @endsection

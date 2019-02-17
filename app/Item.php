@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Box;
 class Item extends Model
 {
     protected $fillable = ['name', 'category_id', 'price', 'quantity'];

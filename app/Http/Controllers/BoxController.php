@@ -3,13 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Input;
-use App\Item;
-use App\Receive;
-use Response;
-use Validator;
 
-class ReceiveController extends Controller
+class BoxController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,8 +13,9 @@ class ReceiveController extends Controller
      */
     public function index()
     {
-        return view('receives.index');
+        //
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -27,7 +23,7 @@ class ReceiveController extends Controller
      */
     public function create()
     {
-        return view('receives.create');
+        //
     }
 
     /**
@@ -84,13 +80,5 @@ class ReceiveController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    //get items
-    public function getItems($id)
-    {
-        $items = Item::where('category_id', $id)->orderBy('name', 'ASC')->get();
-
-        return Response::json(array('items'=>$items));
     }
 }
